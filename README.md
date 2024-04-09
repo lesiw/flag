@@ -2,7 +2,7 @@
 
 [![Go Reference](https://pkg.go.dev/badge/lesiw.io/flag.svg)](https://pkg.go.dev/lesiw.io/flag)
 
-A flag parser for the lazy. Follows the POSIX [utility conventions](utilconv)
+A flag parser for the lazy. Follows the POSIX [utility conventions][utilconv]
 plus GNU `--longopts`.
 
 So, for example, `-abcd` could be four boolean flags, or `-b` could be a string
@@ -56,4 +56,4 @@ func run() int {
 
 [▶️ Run this example on the Go Playground](https://go.dev/play/p/kMjgf7EjuSE)
 
-[utilconv]: https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap12.html.
+[utilconv]: https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap12.html
