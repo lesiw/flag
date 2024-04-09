@@ -42,7 +42,7 @@ func run() int {
     num := fs.Int("n,num", "an int")
     bool := fs.Bool("b,bool", "a bool")
 
-    if err := fs.Parse(os.Args...); err != nil {
+    if err := fs.Parse(os.Args[1:]...); err != nil {
         return 1
     }
 
@@ -54,6 +54,6 @@ func run() int {
 }
 ```
 
-[▶️ Run this example on the Go Playground](https://go.dev/play/p/kMjgf7EjuSE)
+[▶️ Run this example on the Go Playground](https://go.dev/play/p/vFxyeJxVWvM)
 
-[utilconv]: https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap12.html
+[utilconv]: https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap12.HTML
