@@ -56,4 +56,4 @@ func run() int {
 
 [▶️ Run this example on the Go Playground](https://go.dev/play/p/vFxyeJxVWvM)
 
-[utilconv]: https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap12.HTML
+[utilconv]: https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap12.html
