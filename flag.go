@@ -261,7 +261,7 @@ func (f *FlagSet) Defaults() string {
 				fmt.Fprintf(&b, ",-%s", name)
 			}
 		}
-		name, usage := UnquoteUsage(flag)
+		name, usage := unquoteUsage(flag)
 		if len(name) > 0 {
 			fmt.Fprintf(&b, " %s", name)
 		}
@@ -302,7 +302,7 @@ func sortFlags(flags map[string]*Flag) []*Flag {
 	return result
 }
 
-func UnquoteUsage(flag *Flag) (name string, usage string) {
+func unquoteUsage(flag *Flag) (name string, usage string) {
 	usage = flag.Usage
 	for i := 0; i < len(usage); i++ {
 		if usage[i] == '`' {
