@@ -23,6 +23,12 @@ func TestFlag(t *testing.T) {
 		args []string
 		want config
 	}{{
+		args: []string{},
+		want: config{[]string{}, "", 0, false, false, false},
+	}, {
+		args: []string{""},
+		want: config{[]string{}, "", 0, false, false, false},
+	}, {
 		args: []string{"-x"},
 		want: config{[]string{}, "", 0, true, false, false},
 	}, {

@@ -148,7 +148,7 @@ func (s *Set) Parse(args ...string) (err error) {
 		} else if s.args[0] == "-" {
 			s.Args = append(s.Args, "-")
 			s.args = s.args[1:]
-		} else if s.args[0][0] == '-' {
+		} else if len(s.args[0]) > 0 && s.args[0][0] == '-' {
 			if err = s.parseFlag(); err != nil {
 				return
 			}
