@@ -73,7 +73,7 @@ func TestFlag(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(strings.Join(tt.args, " "), func(t *testing.T) {
-			fs := flag.NewFlagSet(new(strings.Builder), "test")
+			fs := flag.NewSet(new(strings.Builder), "test")
 			var s string
 			var n int
 			var x, y, z bool
@@ -110,32 +110,38 @@ func TestFlag(t *testing.T) {
 	}
 }
 
-func ExampleFlagSet_Bool() {
-	fs := flag.NewFlagSet(os.Stderr, "example")
-	bool := fs.Bool("b", "some bool")
-	if err := fs.Parse("example", "-b"); err != nil {
+func ExampleSet_Bool() {
+	var (
+		flags = flag.NewSet(os.Stderr, "example")
+		bool  = flags.Bool("b", "some bool")
+	)
+	if err := flags.Parse("example", "-b"); err != nil {
 		panic(err)
 	}
 	fmt.Println("bool:", *bool)
 	// Output: bool: true
 }
 
-func ExampleFlagSet_String() {
-	fs := flag.NewFlagSet(os.Stderr, "example")
-	word := fs.String("w", "a string")
-	if err := fs.Parse("example", "-wfoo"); err != nil {
+func ExampleSet_String() {
+	var (
+		flags = flag.NewSet(os.Stderr, "example")
+		word  = flags.String("w", "a string")
+	)
+	if err := flags.Parse("example", "-wfoo"); err != nil {
 		panic(err)
 	}
 	fmt.Println("word:", *word)
 	// Output: word: foo
 }
 
-func ExampleFlagSet_String_with_bools() {
-	fs := flag.NewFlagSet(os.Stderr, "example")
-	boola := fs.Bool("a", "some bool")
-	boolb := fs.Bool("b", "some other bool")
-	word := fs.String("c", "a string")
-	if err := fs.Parse("example", "-abcde"); err != nil {
+func ExampleSet_String_mixed() {
+	var (
+		flags = flag.NewSet(os.Stderr, "example")
+		boola = flags.Bool("a", "some bool")
+		boolb = flags.Bool("b", "some other bool")
+		word  = flags.String("c", "a string")
+	)
+	if err := flags.Parse("example", "-abcde"); err != nil {
 		panic(err)
 	}
 	fmt.Println("bool 'a':", *boola)

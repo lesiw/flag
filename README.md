@@ -28,23 +28,19 @@ import (
     "lesiw.io/flag"
 )
 
+var (
+    flags = flag.NewSet(os.Stderr, "sandbox [-w WORD] [-n NUM] [-b] ARGS...")
+    word  = flags.String("w,word", "a string")
+    num   = flags.Int("n,num", "an int")
+    bool  = flags.Bool("b,bool", "a bool")
+)
+
 func main() {
     os.Exit(run())
 }
 
 func run() int {
-    flags := flag.NewFlagSet(os.Stderr, "sandbox")
-
-    // By default, the usage string will be "Usage of UTILNAME:"
-    flags.Usage = "Usage: sandbox [-w WORD] [-n NUM] [-b] ARGS..."
-
-    var (
-        word = flags.String("w,word", "a string")
-        num  = flags.Int("n,num", "an int")
-        bool = flags.Bool("b,bool", "a bool")
-    )
-
-    // Replace os.Args with your own strings to test.
+    // Playground note: Replace os.Args with other strings to test.
     if err := flags.Parse(os.Args[1:]...); err != nil {
         return 1
     }
@@ -62,6 +58,6 @@ func run() int {
 }
 ```
 
-[▶️ Run this example on the Go Playground](https://go.dev/play/p/zvTvgDYN-RP)
+[▶️ Run this example on the Go Playground](https://go.dev/play/p/YN0C5I0L-Et)
 
 [utilconv]: https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap12.html

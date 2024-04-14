@@ -73,110 +73,113 @@ func (f *Flag) set(s string) error {
 	return f.Value.Set(s)
 }
 
-type FlagSet struct {
+type Set struct {
 	args   []string
 	output io.Writer
-	name   string
 	flags  map[string]*Flag
+	usage  string
 	Args   []string
-	Usage  string
 }
 
-func NewFlagSet(output io.Writer, name string) *FlagSet {
-	return &FlagSet{output: output, name: name, flags: make(map[string]*Flag)}
+func NewSet(output io.Writer, usage string) *Set {
+	return &Set{
+		output: output,
+		usage:  usage,
+		flags:  make(map[string]*Flag),
+	}
 }
 
-func (f *FlagSet) Var(value Value, name string, usage string) {
+func (s *Set) Var(value Value, name string, usage string) {
 	names := strings.Split(name, ",")
 	if len(names) < 1 {
 		panic("tried to create flag with no name")
 	}
 	flag := &Flag{names, usage, value, false}
 	for _, name := range names {
-		f.flags[name] = flag
+		s.flags[name] = flag
 	}
 }
 
-func (f *FlagSet) Bool(name string, usage string) *bool {
+func (s *Set) Bool(name string, usage string) *bool {
 	var b bool
-	f.BoolVar(&b, name, usage)
+	s.BoolVar(&b, name, usage)
 	return &b
 }
 
-func (f *FlagSet) BoolVar(p *bool, name string, usage string) {
-	f.Var(newBoolValue(p), name, usage)
+func (s *Set) BoolVar(p *bool, name string, usage string) {
+	s.Var(newBoolValue(p), name, usage)
 }
 
-func (f *FlagSet) String(name string, usage string) *string {
+func (f *Set) String(name string, usage string) *string {
 	var s string
 	f.StringVar(&s, name, usage)
 	return &s
 }
 
-func (f *FlagSet) StringVar(p *string, name string, usage string) {
-	f.Var(newStringValue(p), name, usage)
+func (s *Set) StringVar(p *string, name string, usage string) {
+	s.Var(newStringValue(p), name, usage)
 }
 
-func (f *FlagSet) Int(name string, usage string) *int {
+func (s *Set) Int(name string, usage string) *int {
 	var i int
-	f.IntVar(&i, name, usage)
+	s.IntVar(&i, name, usage)
 	return &i
 }
 
-func (f *FlagSet) IntVar(p *int, name string, usage string) {
-	f.Var(newIntValue(p), name, usage)
+func (s *Set) IntVar(p *int, name string, usage string) {
+	s.Var(newIntValue(p), name, usage)
 }
 
-func (f *FlagSet) Parse(args ...string) (err error) {
+func (s *Set) Parse(args ...string) (err error) {
 	defer func() {
 		if err == nil {
 			return
 		} else if err != errHelp {
-			fmt.Fprintln(f.output, err)
+			fmt.Fprintln(s.output, err)
 		}
-		f.PrintUsage()
+		s.PrintUsage()
 	}()
-	f.args = args
-	for len(f.args) > 0 {
-		if f.args[0] == "--" {
-			f.args = f.args[1:]
-			f.Args = append(f.Args, f.args...)
+	s.args = args
+	for len(s.args) > 0 {
+		if s.args[0] == "--" {
+			s.args = s.args[1:]
+			s.Args = append(s.Args, s.args...)
 			return
-		} else if f.args[0] == "-" {
-			f.Args = append(f.Args, "-")
-			f.args = f.args[1:]
-		} else if f.args[0][0] == '-' {
-			if err = f.parseFlag(); err != nil {
+		} else if s.args[0] == "-" {
+			s.Args = append(s.Args, "-")
+			s.args = s.args[1:]
+		} else if s.args[0][0] == '-' {
+			if err = s.parseFlag(); err != nil {
 				return
 			}
 		} else {
-			f.Args = append(f.Args, f.args[0])
-			f.args = f.args[1:]
+			s.Args = append(s.Args, s.args[0])
+			s.args = s.args[1:]
 		}
 	}
 	return
 }
 
-func (f *FlagSet) Set(s string) bool {
-	if f.flags[s] != nil {
-		return f.flags[s].isSet
+func (s *Set) Set(name string) bool {
+	if s.flags[name] != nil {
+		return s.flags[name].isSet
 	}
 	return false
 }
 
-func (f *FlagSet) parseFlag() error {
-	arg := f.args[0]
-	f.args = f.args[1:]
+func (s *Set) parseFlag() error {
+	arg := s.args[0]
+	s.args = s.args[1:]
 	if arg[0] != '-' {
 		return fmt.Errorf("bad flag: %s", arg)
 	} else if len(arg) > 2 && arg[:2] == "--" {
-		return f.parseLongFlag(arg[2:])
+		return s.parseLongFlag(arg[2:])
 	} else {
-		return f.parseShortFlag(arg[1:])
+		return s.parseShortFlag(arg[1:])
 	}
 }
 
-func (f *FlagSet) parseLongFlag(arg string) error {
+func (s *Set) parseLongFlag(arg string) error {
 	name, val, _ := strings.Cut(arg, "=")
 	if len(name) == 1 {
 		return fmt.Errorf("bad flag: --%s", name) // Short flags are invalid.
@@ -184,14 +187,14 @@ func (f *FlagSet) parseLongFlag(arg string) error {
 	if name == "help" {
 		return errHelp
 	}
-	flag, ok := f.flags[name]
+	flag, ok := s.flags[name]
 	if !ok {
 		return fmt.Errorf("bad flag: --%s", name)
 	}
 	_, bool := flag.Value.(*boolValue)
-	if val == "" && len(f.args) > 0 && !bool {
-		val = f.args[0]
-		f.args = f.args[1:]
+	if val == "" && len(s.args) > 0 && !bool {
+		val = s.args[0]
+		s.args = s.args[1:]
 	} else if val == "" && bool {
 		val = "true"
 	} else if val == "" && !bool {
@@ -200,11 +203,11 @@ func (f *FlagSet) parseLongFlag(arg string) error {
 	return flag.set(val)
 }
 
-func (f *FlagSet) parseShortFlag(arg string) error {
+func (s *Set) parseShortFlag(arg string) error {
 	for len(arg) > 0 {
 		name := arg[0]
 		arg = arg[1:]
-		flag, ok := f.flags[string(name)]
+		flag, ok := s.flags[string(name)]
 		if !ok {
 			return fmt.Errorf("bad flag: '%s'", string(name))
 		} else if _, bool := flag.Value.(*boolValue); bool {
@@ -213,9 +216,9 @@ func (f *FlagSet) parseShortFlag(arg string) error {
 			}
 		} else if len(arg) > 0 {
 			return flag.set(arg)
-		} else if len(f.args) > 0 {
-			arg = f.args[0]
-			f.args = f.args[1:]
+		} else if len(s.args) > 0 {
+			arg = s.args[0]
+			s.args = s.args[1:]
 			return flag.set(arg)
 		} else {
 			return fmt.Errorf("bad flag: '%s' needs value", string(name))
@@ -224,17 +227,13 @@ func (f *FlagSet) parseShortFlag(arg string) error {
 	return nil
 }
 
-func (f *FlagSet) PrintError(s string) {
-	fmt.Fprintln(f.output, s)
-	f.PrintUsage()
+func (s *Set) PrintError(e string) {
+	fmt.Fprintln(s.output, e)
+	s.PrintUsage()
 }
 
-func (f *FlagSet) PrintUsage() {
-	if f.Usage == "" {
-		fmt.Fprintf(f.output, "Usage of %s:", f.name)
-	} else {
-		fmt.Fprintln(f.output, f.Usage)
-	}
+func (f *Set) PrintUsage() {
+	fmt.Fprintln(f.output, "Usage:", f.usage)
 	defaults := f.Defaults()
 	if defaults != "" {
 		fmt.Fprintln(f.output)
@@ -242,10 +241,10 @@ func (f *FlagSet) PrintUsage() {
 	}
 }
 
-func (f *FlagSet) Defaults() string {
+func (s *Set) Defaults() string {
 	var b strings.Builder
 	visited := make(map[*Flag]bool)
-	f.Visit(func(flag *Flag) {
+	s.Visit(func(flag *Flag) {
 		if visited[flag] {
 			return
 		}
@@ -276,17 +275,17 @@ func (f *FlagSet) Defaults() string {
 	return strings.TrimSuffix(b.String(), "\n")
 }
 
-func (f *FlagSet) Visit(fn func(*Flag)) {
-	for _, flag := range sortFlags(f.flags) {
+func (s *Set) Visit(fn func(*Flag)) {
+	for _, flag := range sortFlags(s.flags) {
 		fn(flag)
 	}
 }
 
-func (f *FlagSet) Arg(i int) string {
-	if i < 0 || i >= len(f.Args) {
+func (s *Set) Arg(i int) string {
+	if i < 0 || i >= len(s.Args) {
 		return ""
 	}
-	return f.Args[i]
+	return s.Args[i]
 }
 
 func sortFlags(flags map[string]*Flag) []*Flag {
