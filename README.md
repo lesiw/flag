@@ -8,7 +8,7 @@ plus GNU `--longopts`.
 So, for example, `-abcd` could be four boolean flags, or `-b` could be a string
 flag that considers `cd` to be the argument passed to it.
 
-Pass in an `io.Writer` when creating a `FlagSet` and the `Parse` method will
+Pass in an `io.Writer` when creating a `flag.Set` and the `Parse` method will
 write errors and usage help messages directly to that writer. If `Parse` returns
 an error, it is recommended that the program author exit as soon as possible
 without additional output.
