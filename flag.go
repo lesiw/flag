@@ -110,10 +110,10 @@ func (s *Set) BoolVar(p *bool, name string, usage string) {
 	s.Var(newBoolValue(p), name, usage)
 }
 
-func (f *Set) String(name string, usage string) *string {
-	var s string
-	f.StringVar(&s, name, usage)
-	return &s
+func (s *Set) String(name string, usage string) *string {
+	var str string
+	s.StringVar(&str, name, usage)
+	return &str
 }
 
 func (s *Set) StringVar(p *string, name string, usage string) {
@@ -232,12 +232,12 @@ func (s *Set) PrintError(e string) {
 	s.PrintUsage()
 }
 
-func (f *Set) PrintUsage() {
-	fmt.Fprintln(f.output, "Usage:", f.usage)
-	defaults := f.Defaults()
+func (s *Set) PrintUsage() {
+	fmt.Fprintln(s.output, "Usage:", s.usage)
+	defaults := s.Defaults()
 	if defaults != "" {
-		fmt.Fprintln(f.output)
-		fmt.Fprintln(f.output, defaults)
+		fmt.Fprintln(s.output)
+		fmt.Fprintln(s.output, defaults)
 	}
 }
 
