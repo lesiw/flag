@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -e
+
+[ -z "$PBCTRID" ] && PBCTR=./etc/Dockerfile.dev exec pb "$(basename "$0")"
+
+pb clean
+pb ci
