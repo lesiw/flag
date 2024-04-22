@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"gotest.tools/v3/assert"
 	"lesiw.io/flag"
 )
 
@@ -79,16 +80,16 @@ func TestFlag(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(strings.Join(tt.args, " "), func(t *testing.T) {
-			fs := flag.NewSet(new(strings.Builder), "test")
+			flags := flag.NewSet(new(strings.Builder), "test")
 			var s string
 			var n int
 			var x, y, z bool
-			fs.StringVar(&s, "s", "")
-			fs.IntVar(&n, "n", "")
-			fs.BoolVar(&x, "x", "")
-			fs.BoolVar(&y, "y", "")
-			fs.BoolVar(&z, "zee", "")
-			if err := fs.Parse(tt.args...); err != nil {
+			flags.StringVar(&s, "s", "")
+			flags.IntVar(&n, "n", "")
+			flags.BoolVar(&x, "x", "")
+			flags.BoolVar(&y, "y", "")
+			flags.BoolVar(&z, "zee", "")
+			if err := flags.Parse(tt.args...); err != nil {
 				t.Error(err)
 			}
 			if x != tt.want.x {
@@ -107,11 +108,60 @@ func TestFlag(t *testing.T) {
 				t.Errorf("n: got %v, want %v", n, tt.want.n)
 			}
 			for i := range tt.want.a {
-				if tt.want.a[i] != fs.Arg(i) {
+				if tt.want.a[i] != flags.Arg(i) {
 					t.Errorf("a[%d]: got %v, want %v",
-						i, fs.Arg(i), tt.want.a[i])
+						i, flags.Arg(i), tt.want.a[i])
 				}
 			}
+		})
+	}
+}
+
+type multiconfig struct {
+	a []string
+	s []string
+}
+
+func TestMultiFlags(t *testing.T) {
+	tests := []struct {
+		args []string
+		want multiconfig
+	}{{
+		args: []string{},
+		want: multiconfig{},
+	}, {
+		args: []string{""},
+		want: multiconfig{},
+	}, {
+		args: []string{"-sfoo"},
+		want: multiconfig{[]string{}, []string{"foo"}},
+	}, {
+		args: []string{"-sfoo", "-sbar"},
+		want: multiconfig{[]string{}, []string{"foo", "bar"}},
+	}, {
+		args: []string{"-s", "foo", "-s", "bar"},
+		want: multiconfig{[]string{}, []string{"foo", "bar"}},
+	}, {
+		args: []string{"-s", "foo", "-sbar"},
+		want: multiconfig{[]string{}, []string{"foo", "bar"}},
+	}, {
+		args: []string{"-sfoo", "-s", "bar"},
+		want: multiconfig{[]string{}, []string{"foo", "bar"}},
+	}}
+	for _, tt := range tests {
+		t.Run(strings.Join(tt.args, " "), func(t *testing.T) {
+			flags := flag.NewSet(new(strings.Builder), "test")
+			s := flags.Strings("s", "")
+			if err := flags.Parse(tt.args...); err != nil {
+				t.Error(err)
+			}
+			for i := range tt.want.a {
+				if tt.want.a[i] != flags.Arg(i) {
+					t.Errorf("a[%d]: got %v, want %v",
+						i, flags.Arg(i), tt.want.a[i])
+				}
+			}
+			assert.DeepEqual(t, *s, tt.want.s)
 		})
 	}
 }

@@ -45,6 +45,20 @@ func (s *stringValue) Set(val string) error {
 func (s *stringValue) Get() string    { return string(*s) }
 func (s *stringValue) String() string { return string(*s) }
 
+type stringsValue []string
+
+func newStringsValue(p *[]string) *stringsValue {
+	return (*stringsValue)(p)
+}
+func (s *stringsValue) Set(v string) error {
+	*s = append(*s, v)
+	return nil
+}
+func (s *stringsValue) Get() []string { return *s }
+func (s *stringsValue) String() string {
+	return "[" + strings.Join(*s, ", ") + "]"
+}
+
 type intValue int
 
 func newIntValue(p *int) *intValue {
@@ -118,6 +132,16 @@ func (s *Set) String(name string, usage string) *string {
 
 func (s *Set) StringVar(p *string, name string, usage string) {
 	s.Var(newStringValue(p), name, usage)
+}
+
+func (s *Set) Strings(name string, usage string) *[]string {
+	var strs []string
+	s.StringsVar(&strs, name, usage)
+	return &strs
+}
+
+func (s *Set) StringsVar(p *[]string, name string, usage string) {
+	s.Var(newStringsValue(p), name, usage)
 }
 
 func (s *Set) Int(name string, usage string) *int {
@@ -323,6 +347,8 @@ func unquoteUsage(flag *Flag) (name string, usage string) {
 		name = "num"
 	case *stringValue:
 		name = "string"
+	case *stringsValue:
+		name = "string[,string...]"
 	}
 	return
 }
