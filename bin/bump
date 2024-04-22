@@ -8,5 +8,5 @@ then
 fi
 
 git tag "$(echo "$tag" | bump -s 1)"
-pb ci
+run ci
 git push --tags
