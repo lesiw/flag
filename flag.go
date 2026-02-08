@@ -103,7 +103,7 @@ func NewSet(output io.Writer, usage string) *Set {
 	}
 }
 
-func (s *Set) Var(value Value, name string, usage string) {
+func (s *Set) Var(value Value, name, usage string) {
 	names := strings.Split(name, ",")
 	if len(names) < 1 {
 		panic("tried to create flag with no name")
@@ -114,43 +114,43 @@ func (s *Set) Var(value Value, name string, usage string) {
 	}
 }
 
-func (s *Set) Bool(name string, usage string) *bool {
+func (s *Set) Bool(name, usage string) *bool {
 	var b bool
 	s.BoolVar(&b, name, usage)
 	return &b
 }
 
-func (s *Set) BoolVar(p *bool, name string, usage string) {
+func (s *Set) BoolVar(p *bool, name, usage string) {
 	s.Var(newBoolValue(p), name, usage)
 }
 
-func (s *Set) String(name string, usage string) *string {
+func (s *Set) String(name, usage string) *string {
 	var str string
 	s.StringVar(&str, name, usage)
 	return &str
 }
 
-func (s *Set) StringVar(p *string, name string, usage string) {
+func (s *Set) StringVar(p *string, name, usage string) {
 	s.Var(newStringValue(p), name, usage)
 }
 
-func (s *Set) Strings(name string, usage string) *[]string {
+func (s *Set) Strings(name, usage string) *[]string {
 	var strs []string
 	s.StringsVar(&strs, name, usage)
 	return &strs
 }
 
-func (s *Set) StringsVar(p *[]string, name string, usage string) {
+func (s *Set) StringsVar(p *[]string, name, usage string) {
 	s.Var(newStringsValue(p), name, usage)
 }
 
-func (s *Set) Int(name string, usage string) *int {
+func (s *Set) Int(name, usage string) *int {
 	var i int
 	s.IntVar(&i, name, usage)
 	return &i
 }
 
-func (s *Set) IntVar(p *int, name string, usage string) {
+func (s *Set) IntVar(p *int, name, usage string) {
 	s.Var(newIntValue(p), name, usage)
 }
 
@@ -159,7 +159,7 @@ func (s *Set) Parse(args ...string) (err error) {
 		if err == nil {
 			return
 		} else if err != errHelp {
-			fmt.Fprintln(s.output, err)
+			_, _ = fmt.Fprintln(s.output, err)
 		}
 		s.PrintUsage()
 	}()
@@ -252,16 +252,16 @@ func (s *Set) parseShortFlag(arg string) error {
 }
 
 func (s *Set) PrintError(e string) {
-	fmt.Fprintln(s.output, e)
+	_, _ = fmt.Fprintln(s.output, e)
 	s.PrintUsage()
 }
 
 func (s *Set) PrintUsage() {
-	fmt.Fprintln(s.output, "Usage:", s.usage)
+	_, _ = fmt.Fprintln(s.output, "Usage:", s.usage)
 	defaults := s.Defaults()
 	if defaults != "" {
-		fmt.Fprintln(s.output)
-		fmt.Fprintln(s.output, defaults)
+		_, _ = fmt.Fprintln(s.output)
+		_, _ = fmt.Fprintln(s.output, defaults)
 	}
 }
 
@@ -325,7 +325,7 @@ func sortFlags(flags map[string]*Flag) []*Flag {
 	return result
 }
 
-func unquoteUsage(flag *Flag) (name string, usage string) {
+func unquoteUsage(flag *Flag) (name, usage string) {
 	usage = flag.Usage
 	for i := 0; i < len(usage); i++ {
 		if usage[i] == '`' {
