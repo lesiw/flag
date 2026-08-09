@@ -1,6 +1,6 @@
 module lesiw.io/flag
 
-go 1.21
+go 1.25.0
 
 require gotest.tools/v3 v3.5.2
 
