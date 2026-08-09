@@ -275,8 +275,10 @@ func (s *Set) PrintUsage() {
 }
 
 func (s *Set) Defaults() string {
-	var b strings.Builder
-	visited := make(map[*Flag]bool)
+	var (
+		b       strings.Builder
+		visited = make(map[*Flag]bool)
+	)
 	s.Visit(func(flag *Flag) {
 		if visited[flag] {
 			return
@@ -323,7 +325,7 @@ func (s *Set) Arg(i int) string {
 
 func sortFlags(flags map[string]*Flag) []*Flag {
 	result := make([]*Flag, len(flags))
-	i := 0
+	var i int
 	for _, f := range flags {
 		result[i] = f
 		i++

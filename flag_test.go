@@ -81,10 +81,12 @@ func TestFlag(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(strings.Join(tt.args, " "), func(t *testing.T) {
-			flags := flag.NewSet(new(strings.Builder), "test")
-			var s string
-			var n int
-			var x, y, z bool
+			var (
+				flags   = flag.NewSet(new(strings.Builder), "test")
+				s       string
+				n       int
+				x, y, z bool
+			)
 			flags.StringVar(&s, "s", "")
 			flags.IntVar(&n, "n", "")
 			flags.BoolVar(&x, "x", "")
@@ -152,8 +154,10 @@ func TestMultiFlags(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(strings.Join(tt.args, " "), func(t *testing.T) {
-			flags := flag.NewSet(new(strings.Builder), "test")
-			s := flags.Strings("s", "")
+			var (
+				flags = flag.NewSet(new(strings.Builder), "test")
+				s     = flags.Strings("s", "")
+			)
 			if err := flags.Parse(tt.args...); err != nil {
 				t.Error(err)
 			}
