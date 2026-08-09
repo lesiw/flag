@@ -1,7 +1,6 @@
 package flag
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"sort"
@@ -9,7 +8,7 @@ import (
 	"strings"
 )
 
-var errHelp = errors.New("help requested")
+var errHelp = fmt.Errorf("help requested")
 
 type Value interface {
 	String() string
@@ -277,13 +276,13 @@ func (s *Set) PrintUsage() {
 func (s *Set) Defaults() string {
 	var (
 		b       strings.Builder
-		visited = make(map[*Flag]bool)
+		visited = make(map[*Flag]struct{})
 	)
 	s.Visit(func(flag *Flag) {
-		if visited[flag] {
+		if _, ok := visited[flag]; ok {
 			return
 		}
-		visited[flag] = true
+		visited[flag] = struct{}{}
 		for i, name := range flag.Names {
 			if len(name) > 1 && i == 0 {
 				fmt.Fprintf(&b, "  --%s", name)
@@ -324,8 +323,10 @@ func (s *Set) Arg(i int) string {
 }
 
 func sortFlags(flags map[string]*Flag) []*Flag {
-	result := make([]*Flag, len(flags))
-	var i int
+	var (
+		result = make([]*Flag, len(flags))
+		i      int
+	)
 	for _, f := range flags {
 		result[i] = f
 		i++
