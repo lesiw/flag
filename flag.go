@@ -21,6 +21,7 @@ type boolValue bool
 func newBoolValue(p *bool) *boolValue {
 	return (*boolValue)(p)
 }
+
 func (b *boolValue) Set(s string) error {
 	v, err := strconv.ParseBool(s)
 	if err != nil {
@@ -29,6 +30,7 @@ func (b *boolValue) Set(s string) error {
 	*b = boolValue(v)
 	return err
 }
+
 func (b *boolValue) Get() bool        { return bool(*b) }
 func (b *boolValue) String() string   { return strconv.FormatBool(bool(*b)) }
 func (b *boolValue) IsBoolFlag() bool { return true }
@@ -38,10 +40,12 @@ type stringValue string
 func newStringValue(p *string) *stringValue {
 	return (*stringValue)(p)
 }
+
 func (s *stringValue) Set(val string) error {
 	*s = stringValue(val)
 	return nil
 }
+
 func (s *stringValue) Get() string    { return string(*s) }
 func (s *stringValue) String() string { return string(*s) }
 
@@ -50,11 +54,14 @@ type stringsValue []string
 func newStringsValue(p *[]string) *stringsValue {
 	return (*stringsValue)(p)
 }
+
 func (s *stringsValue) Set(v string) error {
 	*s = append(*s, v)
 	return nil
 }
+
 func (s *stringsValue) Get() []string { return *s }
+
 func (s *stringsValue) String() string {
 	return "[" + strings.Join(*s, ", ") + "]"
 }
@@ -64,6 +71,7 @@ type intValue int
 func newIntValue(p *int) *intValue {
 	return (*intValue)(p)
 }
+
 func (i *intValue) Set(s string) error {
 	v, err := strconv.ParseInt(s, 0, strconv.IntSize)
 	if err != nil {
@@ -72,6 +80,7 @@ func (i *intValue) Set(s string) error {
 	*i = intValue(v)
 	return err
 }
+
 func (i *intValue) Get() int       { return int(*i) }
 func (i *intValue) String() string { return strconv.Itoa(int(*i)) }
 

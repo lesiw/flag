@@ -111,7 +111,8 @@ func TestFlag(t *testing.T) {
 			for i := range tt.want.a {
 				if tt.want.a[i] != flags.Arg(i) {
 					t.Errorf("a[%d]: got %v, want %v",
-						i, flags.Arg(i), tt.want.a[i])
+						i, flags.Arg(i), tt.want.a[i],
+					)
 				}
 			}
 		})
@@ -159,7 +160,8 @@ func TestMultiFlags(t *testing.T) {
 			for i := range tt.want.a {
 				if tt.want.a[i] != flags.Arg(i) {
 					t.Errorf("a[%d]: got %v, want %v",
-						i, flags.Arg(i), tt.want.a[i])
+						i, flags.Arg(i), tt.want.a[i],
+					)
 				}
 			}
 			assert.DeepEqual(t, *s, tt.want.s)
